@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-export default function Home() {
+export default function Splash() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-white font-sans dark:bg-black">
       <Image
