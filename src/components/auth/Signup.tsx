@@ -9,13 +9,67 @@ import Link from "next/link";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { toast } from "sonner";
 
-export function SignUpLayout() {
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [showSplash, setShowSplash] = useState(true); // splash state
+import { ENDPOINTS } from "@/lib/api-config";
+import { useRouter } from "next/navigation";
 
-   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); 
-    console.log("Form submitted");
+export function SignUpLayout() {
+  const router = useRouter();
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.confirmPassword) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(ENDPOINTS.REGISTER, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Account created successfully!");
+        router.push("/auth/login");
+      } else {
+        toast.error(data.message || "Registration failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+      toast.error("An error occurred. Please check your connection.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -26,13 +80,12 @@ export function SignUpLayout() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 3000); // 3000ms = 3 seconds
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
   if (showSplash) {
-    // Splash screen UI
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         <Splash />
@@ -40,37 +93,51 @@ export function SignUpLayout() {
     );
   }
 
-  // Main Auth UI
   return (
     <div className="flex min-h-screen items-center justify-center bg-white font-sans">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-60">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-60 p-4 w-full max-w-6xl">
         <div className="justify-center items-center flex">
           <Image
             src="/logo.png"
             alt="Christful Logo"
             width={300}
             height={300}
-            className="animate-fade-in "
+            className="animate-fade-in w-[200px] md:w-[300px]"
           />
         </div>
-        <div>
+        <div className="w-full max-w-sm mx-auto">
           <form onSubmit={handleSubmit}>
-             <div className="text-center mb-20 sm:mb-20">
-                <p className="text-base  text-xl mb-5 font-semibold leading-none tracking-tight">
-                  Welcome
-                </p>
-                <p className="text-base text-sm text-medium">
-                  Please create a new account to share the gospel <br /> of Christ with others.
-                </p>
+            <div className="text-center mb-10">
+              <h1 className="text-2xl font-bold mb-2">Welcome</h1>
+              <p className="text-muted-foreground">
+                Please create a new account to share the gospel <br /> of Christ with others.
+              </p>
             </div>
-            <div className="relative mb-4">
-              <UserRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                type="text"
-                id="name"
-                placeholder="Enter your full name"
-                className="pl-10"
-              />
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="relative">
+                <UserRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="text"
+                  id="firstName"
+                  placeholder="First Name"
+                  className="pl-10"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="relative">
+                <UserRound className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  type="text"
+                  id="lastName"
+                  placeholder="Last Name"
+                  className="pl-10"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  disabled={isLoading}
+                />
+              </div>
             </div>
             <div className="relative mb-4">
               <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -79,6 +146,9 @@ export function SignUpLayout() {
                 id="email"
                 placeholder="Enter your email"
                 className="pl-10"
+                value={formData.email}
+                onChange={handleChange}
+                disabled={isLoading}
               />
             </div>
             <div className="relative mb-4">
@@ -88,62 +158,56 @@ export function SignUpLayout() {
                 id="password"
                 placeholder="Enter your password"
                 className="pl-10 pr-10"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
                 className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-foreground"
-                aria-label="Toggle password visibility"
               >
-                {passwordVisible ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                    <Eye className="h-4 w-4" />
-                )}
+                {passwordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
-            <div className="relative mb-4">
+            <div className="relative mb-6">
               <LockIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 type={passwordVisible ? "text" : "password"}
                 id="confirmPassword"
                 placeholder="Confirm password"
                 className="pl-10 pr-10"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                disabled={isLoading}
               />
-              <button
+            </div>
+            <div className="mb-4">
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing up..." : "Sign Up"}
+              </Button>
+            </div>
+            <div className="mb-4 text-center">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-[1px] bg-muted-foreground/20 flex-1"></div>
+                <span className="text-xs text-muted-foreground uppercase">or</span>
+                <div className="h-[1px] bg-muted-foreground/20 flex-1"></div>
+              </div>
+              <Button
                 type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-muted-foreground hover:text-foreground"
-                aria-label="Toggle password visibility"
+                className="w-full bg-white border hover:bg-gray-50 text-foreground flex items-center justify-center gap-2"
+                disabled={isLoading}
               >
-                {passwordVisible ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                    <Eye className="h-4 w-4" />
-                )}
-              </button>
+                <FaGoogle className="h-4 w-4 text-red-500" />
+                Continue with Google
+              </Button>
             </div>
-            <div className="mb-4">
-                <Button
-                onClick={() =>
-                toast.success("Action completed successfully!")
-            }
-                className="w-full">Sign Up</Button>
-            </div>
-            <div className="mb-">
-                <Button className="w-full bg-secondary hover:bg-secondary/90 text-foreground">
-                <FaGoogle className="h-4 w-4" />
-                Continue with google
-                </Button>
-            </div>
-            <div className="mb-4 text-center border-b border-muted-foreground/30 pb-5">
-                {/* <Link href="/auth/reset-password" className="text-sm  hover:underline text-center text-blue-600">
-                    Forgotten password?
-                </Link> */}
-            </div>
-            <div className="mb-4">
+            <div className="text-center mt-6">
+              <p className="text-sm text-muted-foreground mb-4">Already have an account?</p>
               <Link href="/auth/login">
-                <Button className="w-full bg-secondary hover:bg-secondary/90 text-foreground">Login</Button>
+                <Button variant="secondary" className="w-full" disabled={isLoading}>
+                  Login
+                </Button>
               </Link>
             </div>
           </form>
@@ -152,3 +216,4 @@ export function SignUpLayout() {
     </div>
   );
 }
+

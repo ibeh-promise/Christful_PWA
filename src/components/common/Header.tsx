@@ -1,15 +1,58 @@
 "use client";
 
-import { Search, House, Users, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, House, Users, Plus, User, LogOut } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { NotificationBell } from "@/components/common/NotificationBell";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import Link from "next/link";
+import { ENDPOINTS } from "@/lib/api-config";
 
 export function Header() {
+  const [user, setUser] = useState<{ firstName: string; avatarUrl?: string } | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      setIsLoggedIn(true);
+      fetchUserData(token);
+    }
+  }, []);
+
+  const fetchUserData = async (token: string) => {
+    try {
+      const response = await fetch(ENDPOINTS.ME, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+      } else if (response.status === 401) {
+        handleLogout();
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token");
+    setIsLoggedIn(false);
+    setUser(null);
+    window.location.reload();
+  };
+
   return (
     <header className="flex items-center justify-between px-4 py-3 bg-white fixed top-0 left-0 right-0 z-50">
-
       {/* Left */}
       <div className="flex items-center gap-4">
         <img src="/logo.png" alt="Christful Logo" width={80} height={80} />
@@ -41,13 +84,51 @@ export function Header() {
           </Button>
 
           {/* Notification Bell with count */}
-          <NotificationBell count={3} />
+          <NotificationBell count={isLoggedIn ? 3 : 0} />
         </div>
 
-        <Avatar className="hidden md:flex">
-          <AvatarImage src="/dextrus.png" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+        <Popover>
+          <PopoverTrigger asChild>
+            <Avatar className="hidden md:flex cursor-pointer">
+              {isLoggedIn && user?.avatarUrl ? (
+                <AvatarImage src={user.avatarUrl} alt={user.firstName} />
+              ) : null}
+              <AvatarFallback>
+                <User className="h-5 w-5 text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
+          </PopoverTrigger>
+          <PopoverContent className="w-48 p-2 mt-2" align="end">
+            {isLoggedIn ? (
+              <div className="flex flex-col gap-1">
+                <div className="px-2 py-1.5 text-sm font-medium border-b mb-1">
+                  Hi, {user?.firstName || "User"}
+                </div>
+                <Link href="/profile" className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-secondary rounded-md cursor-pointer">
+                  <User size={16} />
+                  Profile
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-2 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-md cursor-pointer w-full text-left"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 p-2">
+                <p className="text-sm text-muted-foreground text-center">Join our community to share the gospel</p>
+                <Link href="/auth/login" className="w-full">
+                  <Button className="w-full">Login</Button>
+                </Link>
+                <Link href="/auth/signup" className="w-full">
+                  <Button variant="secondary" className="w-full">Sign Up</Button>
+                </Link>
+              </div>
+            )}
+          </PopoverContent>
+        </Popover>
       </div>
     </header>
   );
