@@ -5,7 +5,7 @@ const posts = [
       authorName: 'Chukwuchebem David',
       authorAvatar: '/dextrus.png',
       date: 'January 2, 2026 at 6:47PM',
-      textContent: 'Check out this beautiful sunset from my hike today!',
+      textContent: 'Let God be seen!',
       mediaUrl: '/dextrus.png',
       mediaAlt: 'Sunset over mountains'
     },

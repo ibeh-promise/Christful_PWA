@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Share, Ellipsis, Play, Pause, Volume2 } from "lucide-react"
+import { Share, Ellipsis, Play, Pause, Volume2, MessageSquareText, Heart, Repeat2, Eye } from "lucide-react"
 import Link from "next/link";
 
 export interface PostCardProps {
@@ -75,7 +75,7 @@ export function PostCard({
               <div className="flex items-center gap-2">
                 <Volume2 size={16} className="text-gray-500" />
                 <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-primary transition-all duration-300"
                     style={{ width: `${audioProgress}%` }}
                   />
@@ -94,7 +94,7 @@ export function PostCard({
   const hasMedia = postType !== 'text' && mediaUrl;
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden shadow-none">
       <CardHeader className="flex items-center justify-between">
         <div className="flex gap-3 items-start">
           <Avatar>
@@ -127,25 +127,31 @@ export function PostCard({
         {textContent && (
           <p className="text-gray-800 whitespace-pre-line">{textContent}</p>
         )}
-        
+
         {hasMedia && renderMedia()}
-        
+
         {!textContent && postType === 'text' && (
           <p className="text-gray-500 italic">No content</p>
         )}
       </CardContent>
 
-      <CardFooter className="border-t pt-4">
-        <div className="flex items-center gap-6 text-sm text-gray-600">
-          <button className="flex items-center gap-1 hover:text-primary">
-            <span>Like</span>
+      <CardFooter className="border-t py-4">
+        <div className="flex items-center justify-between w-full text-sm text-gray-600 sm:justify-start sm:gap-12">
+          <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <MessageSquareText size={18} />
+            <span className="font-medium">2K</span>
           </button>
-          <button className="flex items-center gap-1 hover:text-primary">
-            <span>Comment</span>
+          <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <Heart size={18} />
+            <span className="font-medium">1K</span>
           </button>
-          <button className="flex items-center gap-1 hover:text-primary">
-            <Share size={16} />
-            <span>Share</span>
+          <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <Repeat2 size={18} />
+            <span className="font-medium">100</span>
+          </button>
+          <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <Eye size={18} />
+            <span className="font-medium">100M</span>
           </button>
         </div>
       </CardFooter>

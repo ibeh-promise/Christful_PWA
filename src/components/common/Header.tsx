@@ -8,8 +8,8 @@ import { NotificationBell } from "@/components/common/NotificationBell";
 
 export function Header() {
   return (
-    <header className="flex items-center justify-between px-4 py-3 bg-white">
-      
+    <header className="flex items-center justify-between px-4 py-3 bg-white fixed top-0 left-0 right-0 z-50">
+
       {/* Left */}
       <div className="flex items-center gap-4">
         <img src="/logo.png" alt="Christful Logo" width={80} height={80} />
