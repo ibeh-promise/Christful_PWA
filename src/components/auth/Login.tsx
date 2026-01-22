@@ -135,7 +135,7 @@ export function LoginLayout() {
               </button>
             </div>
             <div className="mb-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-[#800517] hover:bg-[#800517]/90" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </div>

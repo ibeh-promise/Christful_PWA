@@ -78,7 +78,7 @@ export function Header() {
         <Search className="h-6 w-6 text-muted-foreground md:hidden cursor-pointer" />
 
         <div className="flex items-center gap-4">
-          <Button className="hidden md:flex items-center">
+          <Button className="hidden md:flex items-center  bg-[#800517]">
             <Plus className="h-4 w-4 mr-2" />
             Create
           </Button>
@@ -120,7 +120,7 @@ export function Header() {
               <div className="flex flex-col gap-3 p-2">
                 <p className="text-sm text-muted-foreground text-center">Join our community to share the gospel</p>
                 <Link href="/auth/login" className="w-full">
-                  <Button className="w-full">Login</Button>
+                  <Button variant="secondary" className="w-full">Login</Button>
                 </Link>
                 <Link href="/auth/signup" className="w-full">
                   <Button variant="secondary" className="w-full">Sign Up</Button>
