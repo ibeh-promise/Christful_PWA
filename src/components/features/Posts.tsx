@@ -1,12 +1,55 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { FileVideo2, AudioLines, Text as TextIcon } from "lucide-react";
 import { PostCard } from "@/components/common/PostCard"
-import { posts } from "@/postdata";
+import { ENDPOINTS } from "@/lib/api-config";
+import { toast } from "sonner";
+
+interface Post {
+  id: string;
+  content: string;
+  postType: 'image' | 'video' | 'audio' | 'text';
+  author: {
+    firstName: string;
+    lastName: string;
+    avatarUrl: string;
+  };
+  imageUrl?: string;
+  videoUrl?: string;
+  audioUrl?: string;
+  mediaType?: string;
+}
 
 export function Posts() {
   const [activeTab, setActiveTab] = useState("All");
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      const response = await fetch(`${ENDPOINTS.POSTS}?limit=20`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPosts(data.posts || []);
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      toast.error("Failed to load posts");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredPosts = posts.filter((post) => {
     if (activeTab === "All") return true;
@@ -56,9 +99,27 @@ export function Posts() {
         </div>
         <div className="mt-5">
           <div className="space-y-6">
-            {filteredPosts.map((post, index) => (
-              <PostCard key={index} {...post} />
-            ))}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              </div>
+            ) : filteredPosts.length > 0 ? (
+              filteredPosts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  postType={post.postType}
+                  authorName={`${post.author.firstName} ${post.author.lastName}`}
+                  authorAvatar={post.author.avatarUrl}
+                  date={new Date().toLocaleDateString()}
+                  textContent={post.content}
+                  mediaUrl={post.imageUrl || post.videoUrl || post.audioUrl}
+                />
+              ))
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                <p>No posts yet. Be the first to share!</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
