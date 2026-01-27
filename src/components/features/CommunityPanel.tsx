@@ -8,6 +8,7 @@ import { ENDPOINTS } from "@/lib/api-config";
 import { toast } from "sonner";
 
 interface Community {
+  creatorId: string | null;
   id: string;
   name: string;
   avatarUrl?: string;
@@ -35,8 +36,14 @@ export function CommunityPanel() {
       if (response.ok) {
         const data = await response.json();
         const communities = data.communities || [];
-        setUserCommunities(communities.filter((c: Community) => c.isMember).slice(0, 7));
-        setOtherCommunities(communities.filter((c: Community) => !c.isMember).slice(0, 7));
+        const userId = localStorage.getItem("userId");
+        
+        // Separate communities: those you're a member of or created vs those you're not
+        const myComms = communities.filter((c: Community) => c.isMember);
+        const otherComms = communities.filter((c: Community) => !c.isMember && c.creatorId !== userId);
+        
+        setUserCommunities(myComms.slice(0, 7));
+        setOtherCommunities(otherComms.slice(0, 7));
       }
     } catch (error) {
       console.error("Error fetching communities:", error);

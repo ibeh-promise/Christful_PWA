@@ -250,7 +250,7 @@ export function SignUpLayout() {
 
   return (
     <GoogleOAuthProvider clientId="363990971536-b57116i98g4m56bm4vri2uqnfqa4bp4j.apps.googleusercontent.com">
-      <SignUpLayout />
+      <SignUpContent />
     </GoogleOAuthProvider>
   );
 }
