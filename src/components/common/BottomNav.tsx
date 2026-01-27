@@ -7,8 +7,8 @@ export function BottomNav() {
     const pathname = usePathname();
 
     const navItems = [
-        { icon: House, label: "Home", href: "/" },
-        { icon: Users, label: "Groups", href: "/groups" },
+        { icon: House, label: "Home", href: "/home" },
+        { icon: Users, label: "Communities", href: "/communities" },
         { icon: Plus, label: "Create", href: "/create", isMain: true },
         { icon: MessageSquare, label: "Messages", href: "/messages" },
         { icon: User, label: "Profile", href: "/profile" },
@@ -32,11 +32,12 @@ export function BottomNav() {
                     <Link
                         key={index}
                         href={item.href}
-                        className={`flex flex-col items-center gap-1 transition-colors ${isActive ? "text-primary" : "text-muted-foreground"
-                            }`}
+                        className={`flex flex-col items-center p-2 rounded-lg transition-colors ${
+                            isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                        }`}
                     >
-                        <Icon size={22} />
-                        <span className="text-[10px] font-medium">{item.label}</span>
+                        <Icon size={24} />
+                        <span className="text-xs mt-1">{item.label}</span>
                     </Link>
                 );
             })}
