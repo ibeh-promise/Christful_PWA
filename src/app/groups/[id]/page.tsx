@@ -2,10 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Header } from "@/components/common/Header";
-import { BottomNav } from "@/components/common/BottomNav";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ENDPOINTS } from "@/lib/api-config";
@@ -16,6 +13,7 @@ interface GroupMessage {
   id: string;
   content: string;
   sender: {
+    id: string; // Ensure we have ID for alignment
     firstName: string;
     lastName: string;
     avatarUrl: string;
@@ -43,6 +41,31 @@ export default function GroupDetailPage() {
   const [messages, setMessages] = useState<GroupMessage[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch current user ID to determine message alignment
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Attempt to get user ID from local storage or decode token if possible
+    // For now, we'll fetch 'ME'
+    const fetchMe = async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        if (token) {
+          const response = await fetch(ENDPOINTS.ME, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (response.ok) {
+            const data = await response.json();
+            setCurrentUserId(data.user?.id);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to fetch me", e);
+      }
+    };
+    fetchMe();
+  }, []);
 
   useEffect(() => {
     if (groupId) {
@@ -108,40 +131,17 @@ export default function GroupDetailPage() {
 
       if (response.ok) {
         setMessageInput("");
-        fetchMessages();
+        await fetchMessages();
+        // toast.success("Message sent!"); // Optional: WhatsApp usually doesn't toast on send, just shows it, but we can keep it if desired or remove for cleaner UI
       } else {
-        toast.error("Failed to send message");
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.message || "Failed to send message");
       }
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Failed to send message");
     }
   };
-
-  // Fetch current user ID to determine message alignment
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Attempt to get user ID from local storage or decode token if possible
-    // For now, we'll fetch 'ME'
-    const fetchMe = async () => {
-      try {
-        const token = localStorage.getItem("auth_token");
-        if (token) {
-          const response = await fetch(ENDPOINTS.ME, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          if (response.ok) {
-            const data = await response.json();
-            setCurrentUserId(data.user?.id);
-          }
-        }
-      } catch (e) {
-        console.error("Failed to fetch me", e);
-      }
-    };
-    fetchMe();
-  }, []);
 
   if (isLoading) {
     return (
@@ -194,7 +194,7 @@ export default function GroupDetailPage() {
         <div className="max-w-4xl mx-auto flex flex-col gap-2">
           {messages.length > 0 ? (
             messages.map((message) => {
-              const isMe = message.sender.id === currentUserId; // Assuming sender has an ID field
+              const isMe = message.sender.id === currentUserId;
               return (
                 <div
                   key={message.id}
@@ -209,8 +209,8 @@ export default function GroupDetailPage() {
 
                   <div
                     className={`rounded-2xl px-4 py-2 shadow-sm relative ${isMe
-                        ? 'bg-[#DCF8C6] rounded-tr-none text-gray-800'
-                        : 'bg-white rounded-tl-none text-gray-800'
+                      ? 'bg-[#DCF8C6] rounded-tr-none text-gray-800'
+                      : 'bg-white rounded-tl-none text-gray-800'
                       }`}
                   >
                     {!isMe && (

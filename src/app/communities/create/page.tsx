@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/common/Header";
 import { BottomNav } from "@/components/common/BottomNav";
 import { Button } from "@/components/ui/button";
@@ -12,79 +12,58 @@ import { ENDPOINTS } from "@/lib/api-config";
 import { toast } from "sonner";
 import { ChevronLeft } from "lucide-react";
 
-function CreateGroupContent() {
+export default function CreateCommunityPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const communityId = searchParams.get("communityId");
-
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!name.trim()) {
-      toast.error("Group name is required");
+    
+    if (!formData.name.trim()) {
+      toast.error("Community name is required");
       return;
     }
 
-    if (!description.trim()) {
-      toast.error("Group description is required");
+    if (!formData.description.trim()) {
+      toast.error("Community description is required");
       return;
     }
 
     setIsLoading(true);
     try {
       const token = localStorage.getItem("auth_token");
-      if (!token) {
-        toast.error("Please login first");
-        router.push("/auth/login");
-        return;
-      }
-
-      const body: any = {
-        name: name.trim(),
-        description: description.trim(),
-      };
-
-      // Add communityId if this is creating a group within a community
-      if (communityId) {
-        body.communityId = communityId;
-      }
-
-      console.log("Creating group with data:", body);
-
-      const response = await fetch(ENDPOINTS.GROUPS, {
+      const response = await fetch(ENDPOINTS.COMMUNITIES, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          name: formData.name,
+          description: formData.description,
+        }),
       });
 
-      const responseData = await response.json();
-      console.log("Response:", responseData);
-
       if (response.ok) {
-        toast.success("Group created successfully!");
-
-        // Wait a moment before redirecting to ensure server has processed
-        setTimeout(() => {
-          if (communityId) {
-            router.push(`/communities/${communityId}`);
-          } else {
-            router.push("/groups");
-          }
-        }, 500);
+        toast.success("Community created successfully!");
+        setFormData({ name: "", description: "" });
+        router.push("/communities");
       } else {
-        toast.error(responseData.message || "Failed to create group");
-        console.error("Error response:", responseData);
+        const error = await response.json();
+        toast.error(error.message || "Failed to create community");
       }
     } catch (error) {
-      console.error("Error creating group:", error);
-      toast.error("Error creating group");
+      console.error("Error creating community:", error);
+      toast.error("Error creating community");
     } finally {
       setIsLoading(false);
     }
@@ -105,28 +84,26 @@ function CreateGroupContent() {
             Back
           </button>
 
-          {/* Create Group Card */}
+          {/* Create Community Card */}
           <Card className="shadow-lg border-0 bg-white/95 backdrop-blur">
             <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5 border-b">
-              <CardTitle className="text-2xl">
-                Create a New {communityId ? "Community Group" : "Group"}
-              </CardTitle>
+              <CardTitle className="text-2xl">Create a New Community</CardTitle>
             </CardHeader>
 
             <CardContent className="pt-6">
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Group Name */}
+                {/* Community Name */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">
-                    Group Name
+                    Community Name
                   </label>
                   <Input
                     type="text"
-                    placeholder="Enter group name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    name="name"
+                    placeholder="Enter community name"
+                    value={formData.name}
+                    onChange={handleChange}
                     disabled={isLoading}
-                    required
                   />
                 </div>
 
@@ -136,12 +113,12 @@ function CreateGroupContent() {
                     Description
                   </label>
                   <Textarea
-                    placeholder="Describe your group..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    name="description"
+                    placeholder="Describe your community..."
+                    value={formData.description}
+                    onChange={handleChange}
                     className="min-h-32 resize-none"
                     disabled={isLoading}
-                    required
                   />
                 </div>
 
@@ -149,9 +126,9 @@ function CreateGroupContent() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isLoading || !name.trim() || !description.trim()}
+                  disabled={isLoading || !formData.name.trim() || !formData.description.trim()}
                 >
-                  {isLoading ? "Creating..." : "Create Group"}
+                  {isLoading ? "Creating..." : "Create Community"}
                 </Button>
               </form>
             </CardContent>
@@ -161,13 +138,5 @@ function CreateGroupContent() {
 
       <BottomNav />
     </div>
-  );
-}
-
-export default function CreateGroupPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
-      <CreateGroupContent />
-    </Suspense>
   );
 }

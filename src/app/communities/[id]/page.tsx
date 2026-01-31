@@ -6,11 +6,10 @@ import { Header } from "@/components/common/Header";
 import { BottomNav } from "@/components/common/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ENDPOINTS } from "@/lib/api-config";
 import { toast } from "sonner";
-import { ChevronLeft, Users, Settings } from "lucide-react";
+import { ChevronLeft, Settings, Plus } from "lucide-react";
 import Link from "next/link";
 
 interface Community {
@@ -35,6 +34,9 @@ export default function CommunityDetailPage() {
   const [community, setCommunity] = useState<Community | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMember, setIsMember] = useState(false);
+  const [isCreator, setIsCreator] = useState(false);
+  // refreshKey unused but kept for compatibility if needed, though interval drives it
+  // const [refreshKey, setRefreshKey] = useState(0); 
 
   useEffect(() => {
     if (communityId) {
@@ -42,11 +44,22 @@ export default function CommunityDetailPage() {
     }
   }, [communityId]);
 
+  useEffect(() => {
+    // Refresh groups every 3 seconds when on this page
+    const interval = setInterval(() => {
+      if (communityId) {
+        fetchCommunityDetail();
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [communityId]);
+
   const fetchCommunityDetail = async () => {
     try {
       const token = localStorage.getItem("auth_token");
 
-      // Fetch current user and community detail in parallel
+      // Fetch current user and community detail in parallel to safely determine creator status
       const [communityResponse, meResponse] = await Promise.all([
         fetch(ENDPOINTS.COMMUNITY_DETAIL(communityId), {
           headers: { Authorization: `Bearer ${token}` },
@@ -60,22 +73,25 @@ export default function CommunityDetailPage() {
         const communityData = await communityResponse.json();
         setCommunity(communityData);
 
-        let isCreator = false;
+        let creatorCheck = false;
         if (meResponse.ok) {
           const meData = await meResponse.json();
           if (meData.user?.id === communityData.creator.id) {
-            isCreator = true;
+            creatorCheck = true;
           }
         }
-
-        setIsMember(communityData.memberships?.length > 0 || isCreator);
+        setIsCreator(creatorCheck);
+        setIsMember(communityData.memberships?.length > 0 || creatorCheck);
       } else {
-        toast.error("Community not found");
-        router.push("/communities");
+        // Only redirect if it's the initial load to avoid jumping during refresh
+        if (isLoading) {
+          toast.error("Community not found");
+          router.push("/communities");
+        }
       }
     } catch (error) {
       console.error("Error fetching community:", error);
-      toast.error("Failed to load community");
+      if (isLoading) toast.error("Failed to load community");
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +185,14 @@ export default function CommunityDetailPage() {
                   </div>
                 </div>
 
-                {isMember ? (
+                {isCreator ? (
+                  <div className="flex gap-2">
+                    <Button variant="secondary">
+                      <Settings className="h-4 w-4 mr-2" />
+                      Settings
+                    </Button>
+                  </div>
+                ) : isMember ? (
                   <div className="flex gap-2">
                     <Button variant="secondary">
                       <Settings className="h-4 w-4 mr-2" />
@@ -191,7 +214,17 @@ export default function CommunityDetailPage() {
 
           {/* Groups Section */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold mb-4">Groups</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">Groups in this Community</h2>
+              {isMember && (
+                <Link href={`/groups/create?communityId=${communityId}`}>
+                  <Button size="sm" className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Create Group
+                  </Button>
+                </Link>
+              )}
+            </div>
             {community.groups && community.groups.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {community.groups.map((group) => (
@@ -214,7 +247,12 @@ export default function CommunityDetailPage() {
               </div>
             ) : (
               <Card className="text-center py-8">
-                <p className="text-muted-foreground">No groups yet</p>
+                <p className="text-muted-foreground mb-4">No groups yet</p>
+                {isMember && (
+                  <Link href={`/groups/create?communityId=${communityId}`}>
+                    <Button size="sm">Create First Group</Button>
+                  </Link>
+                )}
               </Card>
             )}
           </div>
