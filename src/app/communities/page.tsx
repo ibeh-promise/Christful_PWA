@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Header } from "@/components/common/Header";
 import { BottomNav } from "@/components/common/BottomNav";
 import { PageGrid } from "@/components/common/PageGrid";

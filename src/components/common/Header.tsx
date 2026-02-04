@@ -77,7 +77,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white border-b z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+      <div className="max-w-full mx-auto flex items-center justify-between px-[10px] py-3">
         {/* Left */}
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <Link href="/home">
