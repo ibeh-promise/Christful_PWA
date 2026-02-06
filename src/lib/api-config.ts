@@ -10,6 +10,7 @@ export const ENDPOINTS = {
     REGISTER: `${API_BASE_URL}/register`,
     GOOGLE_AUTH: `${API_BASE_URL}/google-auth`,
     AUTH_ME: `${API_BASE_URL}/auth/me`,
+    ME: `${API_BASE_URL}/auth/me`, // Alias for AUTH_ME
     FORGOT_PASSWORD: `${API_BASE_URL}/forgot-password`,
     RESET_PASSWORD: `${API_BASE_URL}/reset-password`,
 
