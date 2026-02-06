@@ -36,6 +36,7 @@ export const ENDPOINTS = {
 
     // Comments
     COMMENTS: (postId: string) => `${API_BASE_URL}/posts/${postId}/comments`,
+    POST_COMMENTS: (postId: string) => `${API_BASE_URL}/posts/${postId}/comments`,
     COMMENT_DETAIL: (commentId: string) => `${API_BASE_URL}/comments/${commentId}`,
     COMMENT_REPLIES: (commentId: string) => `${API_BASE_URL}/comments/${commentId}/replies`,
     COMMENT_THREAD: (commentId: string) => `${API_BASE_URL}/comments/${commentId}/thread`,
