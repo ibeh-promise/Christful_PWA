@@ -2,9 +2,10 @@
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { FileVideo2, AudioLines, Text as TextIcon } from "lucide-react";
-import { PostCard } from "@/components/common/PostCard"
+import { PostCard } from "@/components/common/PostCard";
 import { ENDPOINTS } from "@/lib/api-config";
 import { toast } from "sonner";
+import { useApi } from "@/hooks/use-api";
 
 interface Post {
   id: string;
@@ -29,46 +30,28 @@ export function Posts({ onDataLoaded }: { onDataLoaded?: () => void }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const { data, error, isLoading: apiLoading, mutate } = useApi<{ posts: Post[] }>(`${ENDPOINTS.POSTS}?limit=20`);
 
-  // Update fetchPosts with error handling
+  useEffect(() => {
+    if (data) {
+      setPosts(data.posts || []);
+      if (onDataLoaded) onDataLoaded();
+    }
+  }, [data, onDataLoaded]);
+
+  useEffect(() => {
+    setIsLoading(apiLoading);
+  }, [apiLoading]);
+
+  useEffect(() => {
+    if (error) {
+      console.error("Error loading posts:", error);
+      toast.error("Failed to load posts");
+    }
+  }, [error]);
 
   const fetchPosts = async () => {
-    try {
-      const token = localStorage.getItem("auth_token");
-      if (!token) {
-        toast.error("Authentication required");
-        return;
-      }
-
-      const response = await fetch(`${ENDPOINTS.POSTS}?limit=20`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem("auth_token");
-          window.location.href = "/auth/login";
-          return;
-        }
-        throw new Error(`API error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setPosts((data?.posts as any[]) || []);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      toast.error("Failed to load posts");
-    } finally {
-      setIsLoading(false);
-      if (onDataLoaded) {
-        onDataLoaded();
-      }
-    }
+    await mutate();
   };
 
   const getPostType = (post: Post): 'image' | 'video' | 'audio' | 'text' => {
@@ -136,7 +119,7 @@ export function Posts({ onDataLoaded }: { onDataLoaded?: () => void }) {
                 const postType = getPostType(post);
                 const userId = localStorage.getItem("userId");
                 const userHasLiked = post.likes?.some((like: any) => like.userId === userId || like.id === userId) || false;
-                
+
                 return (
                   <PostCard
                     key={post.id}
