@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ENDPOINTS } from "@/lib/api-config";
 import { toast } from "sonner";
-import { Mail, MapPin, Link as LinkIcon, Calendar, UserPlus, UserCheck, Edit2, X, Upload, Plus } from "lucide-react";
+import { Edit2, X, Upload, Plus } from "lucide-react";
 import { PostCard } from "@/components/common/PostCard";
+import { useApi } from "@/hooks/use-api";
 
 interface UserProfile {
   id: string;
@@ -50,45 +51,42 @@ export default function ProfilePage() {
   const [editData, setEditData] = useState({ bio: "" });
   const [uploading, setUploading] = useState(false);
 
+  // Use API with caching
+  const { data: userData, error: userError, isLoading: userLoading, mutate: mutateUser } = useApi<UserProfile>(ENDPOINTS.PROFILE);
+  const { data: postsData, error: postsError, isLoading: postsLoading } = useApi<{ posts: Post[] }>(
+    userData?.id ? `${ENDPOINTS.POSTS}?userId=${userData.id}&limit=10` : null
+  );
+
   useEffect(() => {
-    fetchUserProfile();
-  }, [router]); // Add router dependency
+    if (userData) {
+      setUser(userData);
+      setIsOwnProfile(userData.id === localStorage.getItem("userId"));
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (postsData) {
+      setUserPosts(postsData.posts || []);
+    }
+  }, [postsData]);
+
+  useEffect(() => {
+    if (userLoading || postsLoading) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
+    }
+  }, [userLoading, postsLoading]);
 
   useEffect(() => {
     if (user && isEditMode) {
       setEditData({ bio: user.bio || "" });
     }
-  }, [isEditMode]);
+  }, [isEditMode, user]);
 
   const fetchUserProfile = async () => {
-    try {
-      const token = localStorage.getItem("auth_token");
-      const userId = localStorage.getItem("userId");
-      if (!token) {
-        router.push("/auth/login");
-        return;
-      }
-
-      const response = await fetch(ENDPOINTS.PROFILE, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-        setIsOwnProfile(data.id === userId);
-        fetchUserPosts(data.id, token);
-      } else {
-        toast.error("Failed to load profile");
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-      toast.error("Error loading profile");
-    } finally {
-      setIsLoading(false);
-    }
+    // This is now handled by useApi, but we keep the reference if needed for manual refresh via mutateUser
+    await mutateUser();
   };
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,23 +164,7 @@ export default function ProfilePage() {
   };
 
   const fetchUserPosts = async (userId: string, token: string) => {
-    try {
-      const response = await fetch(
-        `${ENDPOINTS.POSTS}?userId=${userId}&limit=10`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setUserPosts(data.posts || []);
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
+    // Handled by useApi
   };
 
   if (isLoading) {
@@ -213,7 +195,7 @@ export default function ProfilePage() {
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-[1095px] mx-auto">
             {/* Cover Photo */}
-            <div className="relative h-[200px] md:h-[350px] w-full bg-gradient-to-r from-slate-200 to-slate-300 rounded-b-xl overflow-hidden group">
+            <div className="relative h-[200px] md:h-[350px] w-full bg-gradient-to-r from-slate-200 to-slate-300 md:rounded-b-xl overflow-hidden group">
               {/* Optional: Add cover photo image here if available */}
               <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               {isOwnProfile && (
@@ -309,7 +291,7 @@ export default function ProfilePage() {
 
           {/* Left Column: Intro & Info */}
           <div className="space-y-4">
-            <Card className="shadow-sm border-none bg-white p-4">
+            <Card className="shadow-sm border-none bg-white p-4 rounded-none md:rounded-xl">
               <h3 className="text-xl font-bold text-slate-900 mb-4">Intro</h3>
               <div className="space-y-4">
                 {isEditMode ? (
@@ -355,7 +337,7 @@ export default function ProfilePage() {
               </div>
             </Card>
 
-            <Card className="shadow-sm border-none bg-white p-4">
+            <Card className="shadow-sm border-none bg-white p-4 rounded-none md:rounded-xl">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-bold text-slate-900">Photos</h3>
                 <button className="text-[#800517] hover:bg-red-50 px-3 py-1.5 rounded-lg text-sm font-medium">See all photos</button>
@@ -372,7 +354,7 @@ export default function ProfilePage() {
           <div className="space-y-4">
             {/* Create Post Card (Dummy) */}
             {isOwnProfile && (
-              <Card className="shadow-sm border-none bg-white p-4">
+              <Card className="shadow-sm border-none bg-white p-4 rounded-none md:rounded-xl">
                 <div className="flex gap-3 mb-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={user.avatarUrl} />

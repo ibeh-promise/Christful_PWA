@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Header } from "@/components/common/Header";
 import { BottomNav } from "@/components/common/BottomNav";
 import { PageGrid } from "@/components/common/PageGrid";
@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Search, Plus, Users, Globe, Settings, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { PostCard } from "@/components/common/PostCard";
+import { useApi } from "@/hooks/use-api";
 
 interface Community {
 	id: string;
@@ -34,30 +35,20 @@ export default function CommunitiesPage() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isLoading, setIsLoading] = useState(true);
 
+	const { data, error, isLoading: apiLoading, mutate } = useApi<{ communities: Community[] }>(`${ENDPOINTS.COMMUNITIES}?limit=20`);
+
 	useEffect(() => {
-		fetchCommunities();
-	}, []);
+		if (data) {
+			setCommunities(data.communities || []);
+		}
+	}, [data]);
+
+	useEffect(() => {
+		setIsLoading(apiLoading);
+	}, [apiLoading]);
 
 	const fetchCommunities = async () => {
-		try {
-			const token = localStorage.getItem("auth_token");
-			const response = await fetch(`${ENDPOINTS.COMMUNITIES}?limit=20`, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-
-			if (response.ok) {
-				const data = await response.json();
-				const comms = data.communities || [];
-				setCommunities(comms);
-			}
-		} catch (error) {
-			console.error("Error fetching communities:", error);
-			toast.error("Failed to load communities");
-		} finally {
-			setIsLoading(false);
-		}
+		await mutate();
 	};
 
 	const handleSearch = async (query: string) => {
@@ -114,7 +105,7 @@ export default function CommunitiesPage() {
 	};
 
 	const CommunityListSidebar = () => (
-		<div className="bg-white rounded-xl shadow-sm border h-full flex flex-col overflow-hidden">
+		<div className="bg-white md:rounded-xl shadow-sm border h-full flex flex-col overflow-hidden border-x-0 md:border-x">
 			<div className="p-5 border-b">
 				<div className="flex justify-between items-center mb-5">
 					<h2 className="text-2xl font-bold text-slate-900">Communities</h2>
@@ -177,7 +168,7 @@ export default function CommunitiesPage() {
 	const DiscoveryCenter = () => (
 		<div className="space-y-6">
 			{/* Featured/Hero Area */}
-			<div className="bg-gradient-to-br from-[#800517] to-[#a0061d] rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
+			<div className="bg-gradient-to-br from-[#800517] to-[#a0061d] md:rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
 				<div className="relative z-10 max-w-lg">
 					<h2 className="text-3xl font-bold mb-3">Find Your Spiritual Family</h2>
 					<p className="text-white/80 mb-6">Join faith-centered communities to grow, share, and connect with believers worldwide.</p>
@@ -192,7 +183,7 @@ export default function CommunitiesPage() {
 
 			{/* Your Communities Section */}
 			{communities.filter(c => c.isMember).length > 0 && (
-				<div className="bg-white p-6 rounded-2xl shadow-sm border">
+				<div className="bg-white p-6 md:rounded-2xl shadow-sm border border-x-0 md:border-x">
 					<h3 className="text-lg font-bold mb-4 flex items-center gap-2">
 						<Users className="text-[#800517]" size={20} />
 						Your Communities
@@ -218,7 +209,7 @@ export default function CommunitiesPage() {
 
 			{/* Lists */}
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<div className="bg-white p-6 rounded-2xl shadow-sm border">
+				<div className="bg-white p-6 md:rounded-2xl shadow-sm border border-x-0 md:border-x">
 					<h3 className="text-lg font-bold mb-4 flex items-center gap-2">
 						<Users className="text-[#800517]" size={20} />
 						Popular Communities
@@ -249,7 +240,7 @@ export default function CommunitiesPage() {
 					</div>
 				</div>
 
-				<div className="bg-white p-6 rounded-2xl shadow-sm border">
+				<div className="bg-white p-6 md:rounded-2xl shadow-sm border border-x-0 md:border-x">
 					<h3 className="text-lg font-bold mb-4 flex items-center gap-2">
 						<Globe className="text-[#800517]" size={20} />
 						Suggested For You

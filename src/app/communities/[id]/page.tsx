@@ -14,6 +14,7 @@ import { ChevronLeft, Settings, Plus, Globe, Users as UsersIcon, Info, Image as 
 import { PostCard } from "@/components/common/PostCard";
 import { PageGrid } from "@/components/common/PageGrid";
 import Link from "next/link";
+import { useApi } from "@/hooks/use-api";
 
 interface Community {
   id: string;
@@ -43,41 +44,27 @@ export default function CommunityDetailPage() {
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupDescription, setNewGroupDescription] = useState("");
 
+  const { data: communityData, isLoading: communityLoading, mutate: mutateCommunity } = useApi<Community>(
+    communityId ? ENDPOINTS.COMMUNITY_DETAIL(communityId) : null
+  );
+  const { data: meData } = useApi<any>(ENDPOINTS.ME);
+
   useEffect(() => {
-    if (communityId) {
-      fetchCommunityDetail();
+    if (communityData) {
+      setCommunity(communityData);
+      const userId = localStorage.getItem("userId");
+      const creatorCheck = userId === communityData.creator.id;
+      setIsCreator(creatorCheck);
+      setIsMember(communityData.memberships?.length > 0 || creatorCheck);
     }
-  }, [communityId]);
+  }, [communityData]);
+
+  useEffect(() => {
+    setIsLoading(communityLoading);
+  }, [communityLoading]);
 
   const fetchCommunityDetail = async () => {
-    try {
-      const token = localStorage.getItem("auth_token");
-      const [communityResponse, meResponse] = await Promise.all([
-        fetch(ENDPOINTS.COMMUNITY_DETAIL(communityId), {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(ENDPOINTS.ME, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-      ]);
-
-      if (communityResponse.ok) {
-        const communityData = await communityResponse.json();
-        setCommunity(communityData);
-
-        if (meResponse.ok) {
-          const meData = await meResponse.json();
-          const userId = meData.id || meData.user?.id;
-          const creatorCheck = userId === communityData.creator.id;
-          setIsCreator(creatorCheck);
-          setIsMember(communityData.memberships?.length > 0 || creatorCheck);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching community:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    await mutateCommunity();
   };
 
   const handleJoinCommunity = async (id: string) => {
@@ -128,7 +115,7 @@ export default function CommunityDetailPage() {
   };
 
   const Sidebar = () => (
-    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+    <div className="bg-white md:rounded-xl shadow-sm border overflow-hidden border-x-0 md:border-x">
       <div className="p-4 border-b">
         <h2 className="font-bold text-lg mb-4 truncate">{community?.name}</h2>
         <div className="space-y-1">
@@ -186,7 +173,7 @@ export default function CommunityDetailPage() {
   const Feed = () => (
     <div className="space-y-4">
       {/* Community Cover & Header */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+      <div className="bg-white md:rounded-xl shadow-sm border overflow-hidden border-x-0 md:border-x">
         <div className="h-48 sm:h-64 bg-slate-200 relative">
           {community?.coverUrl && <img src={community.coverUrl} className="w-full h-full object-cover" />}
           <div className="absolute inset-0 bg-black/20" />
@@ -228,7 +215,7 @@ export default function CommunityDetailPage() {
 
       {/* Post Input */}
       {isMember && (
-        <div className="bg-white p-4 rounded-xl shadow-sm border">
+        <div className="bg-white p-4 md:rounded-xl shadow-sm border border-x-0 md:border-x">
           <div className="flex gap-3">
             <Avatar className="h-10 w-10">
               <AvatarFallback>ME</AvatarFallback>

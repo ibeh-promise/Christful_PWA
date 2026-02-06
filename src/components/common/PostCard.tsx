@@ -68,8 +68,8 @@ export function PostCard({
     switch (postType) {
       case 'image':
         return imageUrl && (
-          <div 
-            className="relative w-full h-64 md:h-80 overflow-hidden rounded-lg cursor-zoom-in"
+          <div
+            className="relative w-full h-64 md:h-80 overflow-hidden cursor-zoom-in -mx-4 md:mx-0 md:rounded-lg"
             onClick={() => setIsMediaModalOpen(true)}
           >
             <Image
@@ -84,13 +84,13 @@ export function PostCard({
 
       case 'video':
         return videoUrl && (
-          <div className="relative w-full h-64 md:h-80 overflow-hidden rounded-lg group">
+          <div className="relative w-full h-64 md:h-80 overflow-hidden group -mx-4 md:mx-0 md:rounded-lg">
             <video
               src={videoUrl}
               className="w-full h-full object-cover"
               controls
             />
-            <button 
+            <button
               onClick={() => setIsMediaModalOpen(true)}
               className="absolute top-2 right-2 bg-black/50 p-2 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity"
               title="Full screen view"
@@ -102,7 +102,7 @@ export function PostCard({
 
       case 'audio':
         return audioUrl && (
-          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-4 p-4 bg-gray-50 -mx-4 md:mx-0 md:rounded-lg">
             <button
               onClick={() => setIsPlaying(!isPlaying)}
               className="flex items-center justify-center w-12 h-12 rounded-full bg-primary text-white hover:bg-primary/90"
@@ -255,8 +255,8 @@ export function PostCard({
   const hasMedia = postType !== 'text' && (imageUrl || videoUrl || audioUrl);
 
   return (
-    <Card className="overflow-hidden shadow-none">
-      <CardHeader className="flex items-center justify-between">
+    <Card className="overflow-hidden shadow-none rounded-none md:rounded-xl border-x-0 md:border-x">
+      <CardHeader className="flex items-center justify-between px-4 md:px-6">
         <div className="flex gap-3 items-start">
           <Avatar>
             <AvatarImage src={authorAvatar} />
@@ -319,7 +319,7 @@ export function PostCard({
         </CardAction>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 px-4 md:px-6">
         {textContent && (
           <div>
             <p className={`text-gray-800 whitespace-pre-line ${!showFullText ? "line-clamp-4" : ""}`}>
@@ -336,7 +336,9 @@ export function PostCard({
           </div>
         )}
 
-        {hasMedia && renderMedia()}
+        <div className="w-full">
+          {hasMedia && renderMedia()}
+        </div>
 
         {!textContent && postType === 'text' && (
           <p className="text-gray-500 italic">No content</p>
@@ -378,41 +380,55 @@ export function PostCard({
           {showComments && (
             <div className="border-t pt-4 space-y-4">
               {/* Comment Input */}
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add a comment..."
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  disabled={isLoading}
-                  className="flex-1"
-                />
-                <button
-                  onClick={handleAddComment}
-                  disabled={isLoading || !commentText.trim()}
-                  className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 disabled:opacity-50 transition-colors"
-                >
-                  {isLoading ? "..." : "Post"}
-                </button>
+              <div className="flex gap-2 items-start">
+                <Avatar className="h-8 w-8 flex-shrink-0">
+                  <AvatarImage src={localStorage.getItem("userAvatar") || ""} />
+                  <AvatarFallback>{(localStorage.getItem("userName") || "U").charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 flex gap-2">
+                  <Input
+                    placeholder="Write a comment..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    disabled={isLoading}
+                    className="flex-1 bg-slate-100 border-none rounded-2xl py-2 px-4 focus-visible:ring-0"
+                  />
+                  <button
+                    onClick={handleAddComment}
+                    disabled={isLoading || !commentText.trim()}
+                    className="p-2 text-primary hover:bg-primary/10 rounded-full disabled:opacity-50 transition-colors"
+                  >
+                    <Share className="h-5 w-5 rotate-90" />
+                  </button>
+                </div>
               </div>
 
               {/* Comments List */}
-              <div className="space-y-3 max-h-96 overflow-y-auto">
+              <div className="space-y-4 max-h-96 overflow-y-auto pr-2 scrollbar-hide">
                 {comments.length > 0 ? (
                   comments.map((comment, idx) => (
-                    <div key={comment.id || idx} className="flex gap-2 p-2 bg-gray-50 rounded">
-                      <Avatar className="h-8 w-8 flex-shrink-0">
+                    <div key={comment.id || idx} className="flex gap-2 items-start group">
+                      <Avatar className="h-8 w-8 flex-shrink-0 mt-1">
                         <AvatarImage src={comment.authorAvatar} />
                         <AvatarFallback>{comment.authorName?.[0]}</AvatarFallback>
                       </Avatar>
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{comment.authorName}</div>
-                        <div className="text-sm text-gray-700">{comment.content || comment.text}</div>
-                        <div className="text-xs text-gray-500 mt-1">{comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : ""}</div>
+                      <div className="flex flex-col gap-1 flex-1">
+                        <div className="bg-slate-100 rounded-[18px] py-2 px-3 inline-block max-w-[95%]">
+                          <div className="font-bold text-xs hover:underline cursor-pointer">{comment.authorName}</div>
+                          <div className="text-sm text-gray-800 break-words leading-tight">{comment.content || comment.text}</div>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs font-bold text-gray-500 px-2">
+                          <button className="hover:underline">Like</button>
+                          <button className="hover:underline">Reply</button>
+                          <span className="font-normal text-[10px] text-gray-400">
+                            {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : "Just now"}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-center text-gray-500 text-sm py-4">No comments yet</p>
+                  <p className="text-center text-gray-400 text-sm py-8 italic font-medium">No comments yet. Be the first to gospel share!</p>
                 )}
               </div>
             </div>
