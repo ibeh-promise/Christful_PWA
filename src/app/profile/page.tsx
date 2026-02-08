@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { formatRelativeTime } from "@/lib/date-utils";
 import { ENDPOINTS } from "@/lib/api-config";
 import { toast } from "sonner";
 import { Edit2, Upload, Plus, UserPlus, Mail, Calendar } from "lucide-react";
@@ -136,7 +137,7 @@ export default function ProfilePage() {
       setUploading(true);
       const token = localStorage.getItem("auth_token");
 
-      const response = await fetch(ENDPOINTS.ME, {
+      const response = await fetch(ENDPOINTS.PROFILE, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -410,7 +411,7 @@ export default function ProfilePage() {
                       authorId={post.author.id}
                       authorName={`${post.author.firstName} ${post.author.lastName}`}
                       authorAvatar={post.author.avatarUrl || ''}
-                      date={post.createdAt ? new Date(post.createdAt).toLocaleDateString() : new Date().toLocaleDateString()}
+                      date={post.createdAt || new Date().toISOString()}
                       textContent={post.content}
                       imageUrl={post.imageUrl}
                       videoUrl={post.videoUrl}

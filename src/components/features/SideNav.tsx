@@ -58,23 +58,42 @@ export function SideNav() {
             </Button>
           </Link>
 
-          <Button variant="ghost" className="w-full justify-start gap-3 h-12 rounded-lg hover:bg-slate-50">
-            <div className="bg-slate-200 text-slate-600 p-2 rounded-lg">
-              <BookOpenText size={18} />
-            </div>
-            <span className="font-semibold">Library</span>
-          </Button>
+          <Link href="/library" className="w-full">
+            <Button variant="ghost" className="w-full justify-start gap-3 h-12 rounded-lg hover:bg-slate-50">
+              <div className="bg-slate-200 text-slate-600 p-2 rounded-lg">
+                <BookOpenText size={18} />
+              </div>
+              <span className="font-semibold">Library</span>
+            </Button>
+          </Link>
 
-          <Button variant="ghost" className="w-full justify-start gap-3 h-12 rounded-lg hover:bg-slate-50">
-            <div className="bg-slate-200 text-slate-600 p-2 rounded-lg">
-              <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-              </svg>
-            </div>
-            <span className="font-semibold">Saved</span>
-          </Button>
+          <Link href="/saved" className="w-full">
+            <Button variant="ghost" className="w-full justify-start gap-3 h-12 rounded-lg hover:bg-slate-50">
+              <div className="bg-slate-200 text-slate-600 p-2 rounded-lg">
+                <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                </svg>
+              </div>
+              <span className="font-semibold">Saved</span>
+            </Button>
+          </Link>
 
-          <Button variant="ghost" className="w-full justify-start gap-3 h-12 rounded-lg hover:bg-slate-50">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 h-12 rounded-lg hover:bg-slate-50"
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: 'Join Christful',
+                  text: 'Check out Christful PWA - A Kingdom Community!',
+                  url: window.location.origin,
+                }).catch(console.error);
+              } else {
+                navigator.clipboard.writeText(window.location.origin);
+                toast.success("Link copied to clipboard!");
+              }
+            }}
+          >
             <div className="bg-slate-200 text-slate-600 p-2 rounded-lg">
               <Handshake size={18} />
             </div>

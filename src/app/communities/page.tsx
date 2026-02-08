@@ -231,9 +231,9 @@ export default function CommunitiesPage() {
 									size="sm"
 									variant={community.isMember ? "outline" : "default"}
 									className={community.isMember ? "" : "bg-[#800517] text-white hover:bg-[#a0061d]"}
-									onClick={() => !community.isMember && handleJoinCommunity(community.id)}
+									onClick={() => community.isMember ? router.push(`/communities/${community.id}`) : handleJoinCommunity(community.id)}
 								>
-									{community.isMember ? "Joined" : "Join"}
+									{community.isMember ? "View" : "Join"}
 								</Button>
 							</div>
 						))}
@@ -262,9 +262,9 @@ export default function CommunitiesPage() {
 									size="sm"
 									variant={community.isMember ? "outline" : "default"}
 									className={community.isMember ? "" : "bg-[#800517] text-white hover:bg-[#a0061d]"}
-									onClick={() => !community.isMember && handleJoinCommunity(community.id)}
+									onClick={() => community.isMember ? router.push(`/communities/${community.id}`) : handleJoinCommunity(community.id)}
 								>
-									{community.isMember ? "Joined" : "Join"}
+									{community.isMember ? "View" : "Join"}
 								</Button>
 							</div>
 						))}

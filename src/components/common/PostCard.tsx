@@ -18,6 +18,7 @@ import Link from "next/link";
 import { ENDPOINTS } from "@/lib/api-config";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import { formatRelativeTime } from "@/lib/date-utils";
 
 export interface PostCardProps {
   postId: string;
@@ -33,6 +34,7 @@ export interface PostCardProps {
   likesCount?: number;
   commentsCount?: number;
   isLiked?: boolean;
+  isSaved?: boolean;
 }
 
 export function PostCard({
@@ -49,10 +51,12 @@ export function PostCard({
   likesCount = 0,
   commentsCount = 0,
   isLiked = false,
+  isSaved = false,
 }: PostCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
   const [liked, setLiked] = useState(isLiked);
+  const [saved, setSaved] = useState(isSaved);
   const [currentLikesCount, setCurrentLikesCount] = useState(likesCount);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -131,10 +135,14 @@ export function PostCard({
   };
 
   const handleLike = async () => {
-    try {
-      setIsLoading(true);
-      const token = localStorage.getItem("auth_token");
+    // Optimistic update
+    const previousLiked = liked;
+    const previousCount = currentLikesCount;
+    setLiked(!liked);
+    setCurrentLikesCount(liked ? currentLikesCount - 1 : currentLikesCount + 1);
 
+    try {
+      const token = localStorage.getItem("auth_token");
       const response = await fetch(ENDPOINTS.LIKE_POST(postId), {
         method: "POST",
         headers: {
@@ -143,43 +151,73 @@ export function PostCard({
         },
       });
 
-      if (response.ok) {
-        setLiked(!liked);
-        setCurrentLikesCount(liked ? currentLikesCount - 1 : currentLikesCount + 1);
-        toast.success(liked ? "Post unliked" : "Post liked");
+      if (!response.ok) {
+        throw new Error("Failed to like post");
       }
+      toast.success(liked ? "Post unliked" : "Post liked");
     } catch (error) {
+      // Revert on error
+      setLiked(previousLiked);
+      setCurrentLikesCount(previousCount);
       console.error("Error liking post:", error);
       toast.error("Failed to like post");
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const handleFollow = async () => {
-    try {
-      setIsLoading(true);
-      const token = localStorage.getItem("auth_token");
+  const handleSave = async () => {
+    // Optimistic update
+    const previousSaved = saved;
+    setSaved(!saved);
 
-      const response = await fetch(ENDPOINTS.FOLLOW(authorId), {
-        method: "POST",
+    try {
+      const token = localStorage.getItem("auth_token");
+      const endpoint = saved ? ENDPOINTS.UNSAVE_POST(postId) : ENDPOINTS.SAVE_POST(postId);
+      const method = saved ? "DELETE" : "POST";
+
+      const response = await fetch(endpoint, {
+        method,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
 
-      if (response.ok) {
-        setIsFollowing(!isFollowing);
-        toast.success(isFollowing ? "Unfollowed" : "Followed");
-      } else {
-        toast.error("Failed to follow user");
+      if (!response.ok) {
+        throw new Error("Failed to save post");
       }
+      toast.success(saved ? "Post removed from Library" : "Post saved to Library");
     } catch (error) {
+      // Revert on error
+      setSaved(previousSaved);
+      console.error("Error saving post:", error);
+      toast.error("Failed to update save status");
+    }
+  };
+
+  const handleFollow = async () => {
+    // Optimistic update
+    const previousFollowing = isFollowing;
+    setIsFollowing(!isFollowing);
+
+    try {
+      const token = localStorage.getItem("auth_token");
+      const response = await fetch(ENDPOINTS.FOLLOW(authorId), {
+        method: isFollowing ? "DELETE" : "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to follow user");
+      }
+      toast.success(isFollowing ? "Unfollowed" : "Followed");
+    } catch (error) {
+      // Revert on error
+      setIsFollowing(previousFollowing);
       console.error("Error following user:", error);
       toast.error("Failed to follow user");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -258,7 +296,7 @@ export function PostCard({
   const hasMedia = postType !== 'text' && (imageUrl || videoUrl || audioUrl);
 
   return (
-    <Card className="overflow-hidden shadow-none rounded-none md:rounded-xl border-x-0 md:border-x">
+    <Card className="overflow-hidden shadow-none rounded-2xl md:rounded-xl border md:border-x">
       <CardHeader className="flex items-center justify-between px-4 md:px-6">
         <div className="flex gap-3 items-start">
           <Avatar>
@@ -271,17 +309,16 @@ export function PostCard({
           <div>
             <CardTitle className="text-base font-semibold">
               {authorName}
-              {!isOwnPost && (
+              {!isOwnPost && !isFollowing && (
                 <button
                   onClick={handleFollow}
-                  disabled={isLoading}
-                  className="text-xs text-medium text-[#556B2F] ml-2 hover:underline disabled:opacity-50"
+                  className="text-[11px] font-bold bg-[#800517] text-white px-3 py-1 rounded-full ml-3 hover:bg-[#a0061d] transition-colors active:scale-95 shadow-sm"
                 >
-                  · {isFollowing ? "Unfollow" : "Follow"}
+                  Follow
                 </button>
               )}
             </CardTitle>
-            <CardDescription className="text-sm">{date}</CardDescription>
+            <CardDescription className="text-sm">{formatRelativeTime(date)}</CardDescription>
           </div>
         </div>
 
@@ -295,10 +332,10 @@ export function PostCard({
               <div className="space-y-1">
                 <Button
                   variant="ghost"
-                  className="w-full justify-start gap-2 h-9 text-sm"
-                  onClick={() => toast.success("Post saved to Library!")}
+                  className={`w-full justify-start gap-2 h-9 text-sm ${saved ? "text-primary" : ""}`}
+                  onClick={handleSave}
                 >
-                  <Bookmark className="h-4 w-4" /> Save Post
+                  <Bookmark className={`h-4 w-4 ${saved ? "fill-current" : ""}`} /> {saved ? "Unsave Post" : "Save Post"}
                 </Button>
                 <Button
                   variant="ghost"
@@ -340,7 +377,7 @@ export function PostCard({
         )}
 
         {hasMedia && (
-          <div className="w-full mt-2">
+          <div className="w-full mt-1.5">
             {renderMedia()}
           </div>
         )}
@@ -357,28 +394,22 @@ export function PostCard({
           {/* Action Buttons */}
           <div className="flex items-center justify-between w-full text-sm text-gray-600 sm:justify-start sm:gap-12">
             <button
-              onClick={handleLoadComments}
-              disabled={loadingComments}
-              className="flex items-center gap-1.5 hover:text-primary transition-colors disabled:opacity-50"
-            >
-              <MessageSquareText size={18} />
-              <span className="font-medium">{commentsCount}</span>
-            </button>
-            <button
               onClick={handleLike}
-              disabled={isLoading}
-              className={`flex items-center gap-1.5 transition-colors disabled:opacity-50 ${liked ? "text-red-500" : "hover:text-primary"
+              className={`flex items-center gap-1.5 transition-colors ${liked ? "text-red-500" : "hover:text-primary"
                 }`}
             >
               <Heart size={18} fill={liked ? "currentColor" : "none"} />
               <span className="font-medium">{currentLikesCount}</span>
             </button>
-            <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
-              <Repeat2 size={18} />
-              <span className="font-medium">0</span>
+            <button
+              onClick={handleLoadComments}
+              className="flex items-center gap-1.5 hover:text-primary transition-colors"
+            >
+              <MessageSquareText size={18} />
+              <span className="font-medium">{commentsCount}</span>
             </button>
             <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
-              <Eye size={18} />
+              <Repeat2 size={18} />
               <span className="font-medium">0</span>
             </button>
           </div>
@@ -448,7 +479,7 @@ export function PostCard({
                             Reply
                           </button>
                           <span className="font-normal text-[10px] text-gray-400">
-                            {comment.createdAt ? new Date(comment.createdAt).toLocaleDateString() : "Just now"}
+                            {comment.createdAt ? formatRelativeTime(comment.createdAt) : "Just now"}
                           </span>
                         </div>
                       </div>
