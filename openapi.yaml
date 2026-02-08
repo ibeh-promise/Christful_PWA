@@ -6,7 +6,8 @@ info:
 servers:
   - url: https://christful-backend.vercel.app # Example URL, should be updated or made relative
     description: Production server
-
+  - url: http://localhost:5000
+    description: Local development server
 
 components:
   securitySchemes:
@@ -114,6 +115,7 @@ components:
         id: { type: string, format: uuid }
         name: { type: string }
         description: { type: string, nullable: true }
+        avatarUrl: { type: string, nullable: true }
         communityId: { type: string, format: uuid, nullable: true }
         createdBy: { type: string, format: uuid }
         inviteToken: { type: string, nullable: true }
@@ -172,6 +174,16 @@ components:
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
 
+    SavedPost:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        userId: { type: string, format: uuid }
+        postId: { type: string, format: uuid }
+        post: { $ref: '#/components/schemas/Post' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+
     Error:
       type: object
       properties:
@@ -190,8 +202,8 @@ paths:
           content:
             application/json:
               example:
-                message: "Welcome to the Backend API \uD83D\uDE80"
-                note: "We hope you don\u2019t find our endpoints faulty \uD83D\uDE09"
+                message: "Welcome to the Backend API 🚀"
+                note: "We hope you don’t find our endpoints faulty 😉"
 
   /register:
     post:
@@ -527,6 +539,58 @@ paths:
           description: Unliked
         '201':
           description: Liked
+
+  /posts/{id}/save:
+    post:
+      summary: Save a post for the current user
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '201':
+          description: Post saved
+    delete:
+      summary: Remove a saved post for the current user
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Post unsaved
+
+  /posts/saved:
+    get:
+      summary: Get saved posts for current user (paginated)
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: limit
+          in: query
+          schema: { type: integer, default: 10 }
+      responses:
+        '200':
+          description: Success
+
+  /posts/{id}/saved-status:
+    get:
+      summary: Check if a post is saved by the current user
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Success
 
   /reels:
     post:
@@ -915,17 +979,18 @@ paths:
 
   /groups:
     post:
-      summary: Create a standalone group
+      summary: Create a standalone group (supports avatar upload)
       security: [{ bearerAuth: [] }]
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               required: [name]
               properties:
                 name: { type: string }
                 description: { type: string }
+                avatar: { type: string, format: binary }
       responses:
         '201':
           description: Group created
@@ -1022,7 +1087,7 @@ paths:
         '200':
           description: Success
     put:
-      summary: Update a standalone group
+      summary: Update a standalone group (supports avatar upload)
       security: [{ bearerAuth: [] }]
       parameters:
         - name: id
@@ -1031,12 +1096,13 @@ paths:
           schema: { type: string }
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               properties:
                 name: { type: string }
                 description: { type: string }
+                avatar: { type: string, format: binary }
       responses:
         '200':
           description: Success
@@ -1333,7 +1399,7 @@ paths:
             schema:
               type: object
               properties:
-                emoji: { type: string, default: '\uD83D\uDC4D' }
+                emoji: { type: string, default: '\Ud83d\udc4d' }
       responses:
         '201':
           description: Success

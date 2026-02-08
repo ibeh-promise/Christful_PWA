@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatRelativeTime } from "@/lib/date-utils";
 
 interface MessageBubbleProps {
     content: string;
@@ -7,7 +8,9 @@ interface MessageBubbleProps {
     isMe: boolean;
     timestamp: string;
     avatarUrl?: string; // Only needed for receiver
+    audioUrl?: string;
     status?: "sent" | "delivered" | "read"; // For sender
+    role?: string;
 }
 
 export function MessageBubble({
@@ -16,7 +19,9 @@ export function MessageBubble({
     isMe,
     timestamp,
     avatarUrl,
+    audioUrl,
     status, // Not fully implemented yet visually but good for interface
+    role,
 }: MessageBubbleProps) {
     return (
         <div
@@ -47,19 +52,31 @@ export function MessageBubble({
                 }}
             >
                 {!isMe && (
-                    <p className="text-xs font-bold text-[#e542a3] mb-1">
-                        {senderName}
-                    </p>
+                    <div className="flex items-center gap-2 mb-1">
+                        <p className="text-xs font-bold text-[#e542a3]">
+                            {senderName}
+                        </p>
+                        {role && (
+                            <span className="bg-[#800517]/10 text-[#800517] text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-tighter">
+                                {role}
+                            </span>
+                        )}
+                    </div>
                 )}
 
                 <div className="mr-8">
                     {/* mr-8 to reserve space for timestamp inside the bubble */}
                     {content}
+                    {audioUrl && (
+                        <div className="mt-2 min-w-[200px]">
+                            <audio src={audioUrl} controls className="w-full h-8" />
+                        </div>
+                    )}
                 </div>
 
                 <div className="absolute bottom-1 right-2 flex items-center gap-1">
                     <span className="text-[11px] text-gray-500">
-                        {timestamp}
+                        {formatRelativeTime(timestamp)}
                     </span>
                     {isMe && (
                         // Double check icon (simplified)

@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteCommentsByIdData, DeleteCommentsByIdResponses, DeleteCommunitiesByCommunityIdGroupsByGroupIdData, DeleteCommunitiesByCommunityIdGroupsByGroupIdResponses, DeleteCommunitiesByCommunityIdMembersByUserIdData, DeleteCommunitiesByCommunityIdMembersByUserIdResponses, DeleteCommunitiesByIdData, DeleteCommunitiesByIdResponses, DeleteGroupsByGroupIdMembersByMemberIdData, DeleteGroupsByGroupIdMembersByMemberIdResponses, DeleteGroupsByIdData, DeleteGroupsByIdResponses, DeleteMessagesByIdData, DeleteMessagesByIdReactData, DeleteMessagesByIdReactResponses, DeleteMessagesByIdResponses, DeleteNotificationsByIdData, DeleteNotificationsByIdResponses, DeletePostsByIdData, DeletePostsByIdResponses, DeleteUsersByIdData, DeleteUsersByIdResponses, DeleteUsersByUserIdFollowData, DeleteUsersByUserIdFollowResponses, GetCommentsByCommentIdRepliesData, GetCommentsByCommentIdRepliesResponses, GetCommentsByCommentIdThreadData, GetCommentsByCommentIdThreadResponses, GetCommunitiesByCommunityIdGroupsData, GetCommunitiesByCommunityIdGroupsResponses, GetCommunitiesByIdData, GetCommunitiesByIdJoinRequestsData, GetCommunitiesByIdJoinRequestsResponses, GetCommunitiesByIdResponses, GetCommunitiesData, GetCommunitiesResponses, GetCommunitiesSearchData, GetCommunitiesSearchResponses, GetCommunitiesSuggestedData, GetCommunitiesSuggestedResponses, GetData, GetGroupChatsData, GetGroupChatsResponses, GetGroupsByGroupIdMessagesData, GetGroupsByGroupIdMessagesResponses, GetGroupsByIdData, GetGroupsByIdResponses, GetGroupsData, GetGroupsResponses, GetNotificationsData, GetNotificationsResponses, GetPostsByIdData, GetPostsByIdResponses, GetPostsByPostIdCommentsData, GetPostsByPostIdCommentsResponses, GetPostsData, GetPostsResponses, GetProfileData, GetProfileResponses, GetReelsSuggestedData, GetReelsSuggestedResponses, GetResponses, GetUserData, GetUserResponses, GetUsersByIdData, GetUsersByIdResponses, GetUsersByUserIdFollowersData, GetUsersByUserIdFollowersResponses, GetUsersByUserIdFollowingData, GetUsersByUserIdFollowingResponses, GetUsersByUserIdFollowStatusData, GetUsersByUserIdFollowStatusResponses, GetUsersData, GetUsersResponses, PatchAuthMeData, PatchAuthMeResponses, PatchCommunitiesByCommunityIdMembersByUserIdRoleData, PatchCommunitiesByCommunityIdMembersByUserIdRoleResponses, PatchGroupsByGroupIdMembersByMemberIdData, PatchGroupsByGroupIdMembersByMemberIdResponses, PatchGroupsByGroupIdSettingsAdminOnlyMessagingData, PatchGroupsByGroupIdSettingsAdminOnlyMessagingResponses, PatchNotificationsByIdReadData, PatchNotificationsByIdReadResponses, PatchNotificationsReadAllData, PatchNotificationsReadAllResponses, PostCommentsByIdLikeData, PostCommentsByIdLikeResponses, PostCommunitiesByCommunityIdGroupsData, PostCommunitiesByCommunityIdGroupsResponses, PostCommunitiesByCommunityIdJoinRequestsByRequestIdApproveData, PostCommunitiesByCommunityIdJoinRequestsByRequestIdApproveResponses, PostCommunitiesByCommunityIdJoinRequestsByRequestIdRejectData, PostCommunitiesByCommunityIdJoinRequestsByRequestIdRejectResponses, PostCommunitiesByIdJoinData, PostCommunitiesByIdJoinResponses, PostCommunitiesByIdLeaveData, PostCommunitiesByIdLeaveResponses, PostCommunitiesByIdRequestJoinData, PostCommunitiesByIdRequestJoinResponses, PostCommunitiesData, PostCommunitiesResponses, PostForgotPasswordData, PostForgotPasswordResponses, PostGoogleAuthData, PostGoogleAuthResponses, PostGroupsByGroupIdInviteLinkData, PostGroupsByGroupIdInviteLinkResponses, PostGroupsByGroupIdLeaveData, PostGroupsByGroupIdLeaveResponses, PostGroupsByGroupIdMembersData, PostGroupsByGroupIdMembersResponses, PostGroupsByGroupIdMessagesData, PostGroupsByGroupIdMessagesResponses, PostGroupsData, PostGroupsJoinViaLinkData, PostGroupsJoinViaLinkResponses, PostGroupsResponses, PostLoginData, PostLoginErrors, PostLoginResponses, PostMessagesByIdReactData, PostMessagesByIdReactResponses, PostPostsByIdLikeData, PostPostsByIdLikeResponses, PostPostsByPostIdCommentsData, PostPostsByPostIdCommentsResponses, PostPostsData, PostPostsResponses, PostReelsData, PostReelsResponses, PostRegisterData, PostRegisterErrors, PostRegisterResponses, PostResetPasswordData, PostResetPasswordResponses, PostSendemailData, PostSendemailResponses, PostUsersByUserIdFollowData, PostUsersByUserIdFollowResponses, PutCommentsByIdData, PutCommentsByIdResponses, PutCommunitiesByCommunityIdGroupsByGroupIdData, PutCommunitiesByCommunityIdGroupsByGroupIdResponses, PutCommunitiesByIdData, PutCommunitiesByIdResponses, PutGroupsByIdData, PutGroupsByIdResponses, PutMessagesByIdData, PutMessagesByIdResponses, PutPostsByIdData, PutPostsByIdResponses, PutUsersByIdData, PutUsersByIdResponses } from './types.gen';
+import type { DeleteCommentsByIdData, DeleteCommentsByIdResponses, DeleteCommunitiesByCommunityIdGroupsByGroupIdData, DeleteCommunitiesByCommunityIdGroupsByGroupIdResponses, DeleteCommunitiesByCommunityIdMembersByUserIdData, DeleteCommunitiesByCommunityIdMembersByUserIdResponses, DeleteCommunitiesByIdData, DeleteCommunitiesByIdResponses, DeleteGroupsByGroupIdMembersByMemberIdData, DeleteGroupsByGroupIdMembersByMemberIdResponses, DeleteGroupsByIdData, DeleteGroupsByIdResponses, DeleteMessagesByIdData, DeleteMessagesByIdReactData, DeleteMessagesByIdReactResponses, DeleteMessagesByIdResponses, DeleteNotificationsByIdData, DeleteNotificationsByIdResponses, DeletePostsByIdData, DeletePostsByIdResponses, DeletePostsByIdSaveData, DeletePostsByIdSaveResponses, DeleteUsersByIdData, DeleteUsersByIdResponses, DeleteUsersByUserIdFollowData, DeleteUsersByUserIdFollowResponses, GetCommentsByCommentIdRepliesData, GetCommentsByCommentIdRepliesResponses, GetCommentsByCommentIdThreadData, GetCommentsByCommentIdThreadResponses, GetCommunitiesByCommunityIdGroupsData, GetCommunitiesByCommunityIdGroupsResponses, GetCommunitiesByIdData, GetCommunitiesByIdJoinRequestsData, GetCommunitiesByIdJoinRequestsResponses, GetCommunitiesByIdResponses, GetCommunitiesData, GetCommunitiesResponses, GetCommunitiesSearchData, GetCommunitiesSearchResponses, GetCommunitiesSuggestedData, GetCommunitiesSuggestedResponses, GetData, GetGroupChatsData, GetGroupChatsResponses, GetGroupsByGroupIdMessagesData, GetGroupsByGroupIdMessagesResponses, GetGroupsByIdData, GetGroupsByIdResponses, GetGroupsData, GetGroupsResponses, GetNotificationsData, GetNotificationsResponses, GetPostsByIdData, GetPostsByIdResponses, GetPostsByIdSavedStatusData, GetPostsByIdSavedStatusResponses, GetPostsByPostIdCommentsData, GetPostsByPostIdCommentsResponses, GetPostsData, GetPostsResponses, GetPostsSavedData, GetPostsSavedResponses, GetProfileData, GetProfileResponses, GetReelsSuggestedData, GetReelsSuggestedResponses, GetResponses, GetUserData, GetUserResponses, GetUsersByIdData, GetUsersByIdResponses, GetUsersByUserIdFollowersData, GetUsersByUserIdFollowersResponses, GetUsersByUserIdFollowingData, GetUsersByUserIdFollowingResponses, GetUsersByUserIdFollowStatusData, GetUsersByUserIdFollowStatusResponses, GetUsersData, GetUsersResponses, PatchAuthMeData, PatchAuthMeResponses, PatchCommunitiesByCommunityIdMembersByUserIdRoleData, PatchCommunitiesByCommunityIdMembersByUserIdRoleResponses, PatchGroupsByGroupIdMembersByMemberIdData, PatchGroupsByGroupIdMembersByMemberIdResponses, PatchGroupsByGroupIdSettingsAdminOnlyMessagingData, PatchGroupsByGroupIdSettingsAdminOnlyMessagingResponses, PatchNotificationsByIdReadData, PatchNotificationsByIdReadResponses, PatchNotificationsReadAllData, PatchNotificationsReadAllResponses, PostCommentsByIdLikeData, PostCommentsByIdLikeResponses, PostCommunitiesByCommunityIdGroupsData, PostCommunitiesByCommunityIdGroupsResponses, PostCommunitiesByCommunityIdJoinRequestsByRequestIdApproveData, PostCommunitiesByCommunityIdJoinRequestsByRequestIdApproveResponses, PostCommunitiesByCommunityIdJoinRequestsByRequestIdRejectData, PostCommunitiesByCommunityIdJoinRequestsByRequestIdRejectResponses, PostCommunitiesByIdJoinData, PostCommunitiesByIdJoinResponses, PostCommunitiesByIdLeaveData, PostCommunitiesByIdLeaveResponses, PostCommunitiesByIdRequestJoinData, PostCommunitiesByIdRequestJoinResponses, PostCommunitiesData, PostCommunitiesResponses, PostForgotPasswordData, PostForgotPasswordResponses, PostGoogleAuthData, PostGoogleAuthResponses, PostGroupsByGroupIdInviteLinkData, PostGroupsByGroupIdInviteLinkResponses, PostGroupsByGroupIdLeaveData, PostGroupsByGroupIdLeaveResponses, PostGroupsByGroupIdMembersData, PostGroupsByGroupIdMembersResponses, PostGroupsByGroupIdMessagesData, PostGroupsByGroupIdMessagesResponses, PostGroupsData, PostGroupsJoinViaLinkData, PostGroupsJoinViaLinkResponses, PostGroupsResponses, PostLoginData, PostLoginErrors, PostLoginResponses, PostMessagesByIdReactData, PostMessagesByIdReactResponses, PostPostsByIdLikeData, PostPostsByIdLikeResponses, PostPostsByIdSaveData, PostPostsByIdSaveResponses, PostPostsByPostIdCommentsData, PostPostsByPostIdCommentsResponses, PostPostsData, PostPostsResponses, PostReelsData, PostReelsResponses, PostRegisterData, PostRegisterErrors, PostRegisterResponses, PostResetPasswordData, PostResetPasswordResponses, PostSendemailData, PostSendemailResponses, PostUsersByUserIdFollowData, PostUsersByUserIdFollowResponses, PutCommentsByIdData, PutCommentsByIdResponses, PutCommunitiesByCommunityIdGroupsByGroupIdData, PutCommunitiesByCommunityIdGroupsByGroupIdResponses, PutCommunitiesByIdData, PutCommunitiesByIdResponses, PutGroupsByIdData, PutGroupsByIdResponses, PutMessagesByIdData, PutMessagesByIdResponses, PutPostsByIdData, PutPostsByIdResponses, PutUsersByIdData, PutUsersByIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -21,12 +21,17 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * Welcome endpoint
  */
-export const get = <ThrowOnError extends boolean = false>(options?: Options<GetData, ThrowOnError>) => (options?.client ?? client).get<GetResponses, unknown, ThrowOnError>({ url: '/', ...options });
+export const get = <ThrowOnError extends boolean = false>(options?: Options<GetData, ThrowOnError>) => (options?.client ?? client).get<GetResponses, unknown, ThrowOnError>({
+    responseType: 'json',
+    url: '/',
+    ...options
+});
 
 /**
  * Register a new user
  */
 export const postRegister = <ThrowOnError extends boolean = false>(options: Options<PostRegisterData, ThrowOnError>) => (options.client ?? client).post<PostRegisterResponses, PostRegisterErrors, ThrowOnError>({
+    responseType: 'json',
     url: '/register',
     ...options,
     headers: {
@@ -39,6 +44,7 @@ export const postRegister = <ThrowOnError extends boolean = false>(options: Opti
  * Login with email and password
  */
 export const postLogin = <ThrowOnError extends boolean = false>(options: Options<PostLoginData, ThrowOnError>) => (options.client ?? client).post<PostLoginResponses, PostLoginErrors, ThrowOnError>({
+    responseType: 'json',
     url: '/login',
     ...options,
     headers: {
@@ -51,6 +57,7 @@ export const postLogin = <ThrowOnError extends boolean = false>(options: Options
  * Login/Register with Google
  */
 export const postGoogleAuth = <ThrowOnError extends boolean = false>(options: Options<PostGoogleAuthData, ThrowOnError>) => (options.client ?? client).post<PostGoogleAuthResponses, unknown, ThrowOnError>({
+    responseType: 'json',
     url: '/google-auth',
     ...options,
     headers: {
@@ -64,6 +71,7 @@ export const postGoogleAuth = <ThrowOnError extends boolean = false>(options: Op
  */
 export const patchAuthMe = <ThrowOnError extends boolean = false>(options?: Options<PatchAuthMeData, ThrowOnError>) => (options?.client ?? client).patch<PatchAuthMeResponses, unknown, ThrowOnError>({
     ...formDataBodySerializer,
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/auth/me',
     ...options,
@@ -101,6 +109,7 @@ export const postResetPassword = <ThrowOnError extends boolean = false>(options:
  * Get current authenticated user
  */
 export const getUser = <ThrowOnError extends boolean = false>(options?: Options<GetUserData, ThrowOnError>) => (options?.client ?? client).get<GetUserResponses, unknown, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/user',
     ...options
@@ -110,6 +119,7 @@ export const getUser = <ThrowOnError extends boolean = false>(options?: Options<
  * Get all users
  */
 export const getUsers = <ThrowOnError extends boolean = false>(options?: Options<GetUsersData, ThrowOnError>) => (options?.client ?? client).get<GetUsersResponses, unknown, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/users',
     ...options
@@ -128,6 +138,7 @@ export const deleteUsersById = <ThrowOnError extends boolean = false>(options: O
  * Get user by ID
  */
 export const getUsersById = <ThrowOnError extends boolean = false>(options: Options<GetUsersByIdData, ThrowOnError>) => (options.client ?? client).get<GetUsersByIdResponses, unknown, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/users/{id}',
     ...options
@@ -150,6 +161,7 @@ export const putUsersById = <ThrowOnError extends boolean = false>(options: Opti
  * Get current user profile (Alias for /user)
  */
 export const getProfile = <ThrowOnError extends boolean = false>(options?: Options<GetProfileData, ThrowOnError>) => (options?.client ?? client).get<GetProfileResponses, unknown, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/profile',
     ...options
@@ -172,6 +184,7 @@ export const postSendemail = <ThrowOnError extends boolean = false>(options: Opt
  * Get all posts (Paginated)
  */
 export const getPosts = <ThrowOnError extends boolean = false>(options?: Options<GetPostsData, ThrowOnError>) => (options?.client ?? client).get<GetPostsResponses, unknown, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/posts',
     ...options
@@ -182,6 +195,7 @@ export const getPosts = <ThrowOnError extends boolean = false>(options?: Options
  */
 export const postPosts = <ThrowOnError extends boolean = false>(options?: Options<PostPostsData, ThrowOnError>) => (options?.client ?? client).post<PostPostsResponses, unknown, ThrowOnError>({
     ...formDataBodySerializer,
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/posts',
     ...options,
@@ -204,6 +218,7 @@ export const deletePostsById = <ThrowOnError extends boolean = false>(options: O
  * Get post by ID
  */
 export const getPostsById = <ThrowOnError extends boolean = false>(options: Options<GetPostsByIdData, ThrowOnError>) => (options.client ?? client).get<GetPostsByIdResponses, unknown, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/posts/{id}',
     ...options
@@ -228,6 +243,42 @@ export const putPostsById = <ThrowOnError extends boolean = false>(options: Opti
 export const postPostsByIdLike = <ThrowOnError extends boolean = false>(options: Options<PostPostsByIdLikeData, ThrowOnError>) => (options.client ?? client).post<PostPostsByIdLikeResponses, unknown, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/posts/{id}/like',
+    ...options
+});
+
+/**
+ * Remove a saved post for the current user
+ */
+export const deletePostsByIdSave = <ThrowOnError extends boolean = false>(options: Options<DeletePostsByIdSaveData, ThrowOnError>) => (options.client ?? client).delete<DeletePostsByIdSaveResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/posts/{id}/save',
+    ...options
+});
+
+/**
+ * Save a post for the current user
+ */
+export const postPostsByIdSave = <ThrowOnError extends boolean = false>(options: Options<PostPostsByIdSaveData, ThrowOnError>) => (options.client ?? client).post<PostPostsByIdSaveResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/posts/{id}/save',
+    ...options
+});
+
+/**
+ * Get saved posts for current user (paginated)
+ */
+export const getPostsSaved = <ThrowOnError extends boolean = false>(options?: Options<GetPostsSavedData, ThrowOnError>) => (options?.client ?? client).get<GetPostsSavedResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/posts/saved',
+    ...options
+});
+
+/**
+ * Check if a post is saved by the current user
+ */
+export const getPostsByIdSavedStatus = <ThrowOnError extends boolean = false>(options: Options<GetPostsByIdSavedStatusData, ThrowOnError>) => (options.client ?? client).get<GetPostsByIdSavedStatusResponses, unknown, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/posts/{id}/saved-status',
     ...options
 });
 
@@ -488,14 +539,15 @@ export const getGroups = <ThrowOnError extends boolean = false>(options?: Option
 });
 
 /**
- * Create a standalone group
+ * Create a standalone group (supports avatar upload)
  */
 export const postGroups = <ThrowOnError extends boolean = false>(options?: Options<PostGroupsData, ThrowOnError>) => (options?.client ?? client).post<PostGroupsResponses, unknown, ThrowOnError>({
+    ...formDataBodySerializer,
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/groups',
     ...options,
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': null,
         ...options?.headers
     }
 });
@@ -563,14 +615,15 @@ export const getGroupsById = <ThrowOnError extends boolean = false>(options: Opt
 });
 
 /**
- * Update a standalone group
+ * Update a standalone group (supports avatar upload)
  */
 export const putGroupsById = <ThrowOnError extends boolean = false>(options: Options<PutGroupsByIdData, ThrowOnError>) => (options.client ?? client).put<PutGroupsByIdResponses, unknown, ThrowOnError>({
+    ...formDataBodySerializer,
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/groups/{id}',
     ...options,
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': null,
         ...options.headers
     }
 });

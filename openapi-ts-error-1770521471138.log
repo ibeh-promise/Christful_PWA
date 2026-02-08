@@ -1,0 +1,34 @@
+[2026-02-08T03:31:11.139Z] Error: Error parsing c:/Users/HP/Christful_PWA/openapi.yaml: expected hexadecimal character (205:60)
+
+ 202 |  ... 
+ 203 |  ... 
+ 204 |  ... 
+ 205 |  ... come to the Backend API \Ud83d\ude80"
+------------------------------------------^
+ 206 |  ... e you don\u2019t find our endpoints faulty \U0001f609"
+ 207 |  ... 
+Stack:
+ParserError: Error parsing c:/Users/HP/Christful_PWA/openapi.yaml: expected hexadecimal character (205:60)
+
+ 202 |  ... 
+ 203 |  ... 
+ 204 |  ... 
+ 205 |  ... come to the Backend API \Ud83d\ude80"
+------------------------------------------^
+ 206 |  ... e you don\u2019t find our endpoints faulty \U0001f609"
+ 207 |  ... 
+    at Object.handler (C:\Users\HP\Christful_PWA\node_modules\.pnpm\@hey-api+json-schema-ref-parser@1.2.4\node_modules\@hey-api\json-schema-ref-parser\dist\lib\parsers\yaml.js:24:19)
+    at runNextPlugin (C:\Users\HP\Christful_PWA\node_modules\.pnpm\@hey-api+json-schema-ref-parser@1.2.4\node_modules\@hey-api\json-schema-ref-parser\dist\lib\util\plugins.js:24:45)
+    at C:\Users\HP\Christful_PWA\node_modules\.pnpm\@hey-api+json-schema-ref-parser@1.2.4\node_modules\@hey-api\json-schema-ref-parser\dist\lib\util\plugins.js:43:9
+    at new Promise (<anonymous>)
+    at Object.run (C:\Users\HP\Christful_PWA\node_modules\.pnpm\@hey-api+json-schema-ref-parser@1.2.4\node_modules\@hey-api\json-schema-ref-parser\dist\lib\util\plugins.js:16:12)
+    at parseFile (C:\Users\HP\Christful_PWA\node_modules\.pnpm\@hey-api+json-schema-ref-parser@1.2.4\node_modules\@hey-api\json-schema-ref-parser\dist\lib\parse.js:72:30)
+    at $RefParser.parse (C:\Users\HP\Christful_PWA\node_modules\.pnpm\@hey-api+json-schema-ref-parser@1.2.4\node_modules\@hey-api\json-schema-ref-parser\dist\lib\index.js:230:68)
+    at async $RefParser.bundle (C:\Users\HP\Christful_PWA\node_modules\.pnpm\@hey-api+json-schema-ref-parser@1.2.4\node_modules\@hey-api\json-schema-ref-parser\dist\lib\index.js:132:9)
+    at async createClient$1 (file:///c:/Users/HP/Christful_PWA/node_modules/.pnpm/@hey-api+openapi-ts@0.92.3_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/src-BbXkGzWZ.mjs:79:8)
+    at async file:///c:/Users/HP/Christful_PWA/node_modules/.pnpm/@hey-api+openapi-ts@0.92.3_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/src-BbXkGzWZ.mjs:182:12
+    at async Promise.all (index 0)
+    at async createClient (file:///c:/Users/HP/Christful_PWA/node_modules/.pnpm/@hey-api+openapi-ts@0.92.3_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/src-BbXkGzWZ.mjs:180:21)
+    at async Command.<anonymous> (file:///c:/Users/HP/Christful_PWA/node_modules/.pnpm/@hey-api+openapi-ts@0.92.3_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/run.mjs:38:8)
+    at async Command.parseAsync (C:\Users\HP\Christful_PWA\node_modules\.pnpm\commander@14.0.3\node_modules\commander\lib\command.js:1122:5)
+    at async runCli (file:///c:/Users/HP/Christful_PWA/node_modules/.pnpm/@hey-api+openapi-ts@0.92.3_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/run.mjs:42:3)

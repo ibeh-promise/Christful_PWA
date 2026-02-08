@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Search, House, Users, Plus, User, LogOut, Clapperboard } from "lucide-react";
+import { Search, House, Users, Plus, User, LogOut, Clapperboard, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/popover";
 import Link from "next/link";
 import { ENDPOINTS } from "@/lib/api-config";
+import { SideNav } from "@/components/features/SideNav";
 
 export function Header() {
   const [user, setUser] = useState<{ id?: string; firstName: string; lastName?: string; avatarUrl?: string } | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const fetchNotificationCount = useCallback(async (token: string) => {
     try {
@@ -39,7 +41,7 @@ export function Header() {
 
   const fetchUserData = useCallback(async (token: string) => {
     try {
-      const response = await fetch(ENDPOINTS.ME, {
+      const response = await fetch(ENDPOINTS.PROFILE, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -83,6 +85,14 @@ export function Header() {
           <Link href="/home">
             <img src="/logo.png" alt="Christful Logo" className="w-[100px] h-auto" />
           </Link>
+
+          <button
+            className="md:hidden p-2 hover:bg-slate-100 rounded-lg text-slate-600 transition-colors"
+            onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Open menu"
+          >
+            <Menu size={24} />
+          </button>
 
           <div className="relative hidden lg:block">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -176,6 +186,53 @@ export function Header() {
           </Popover>
         </div>
       </div>
+
+      {/* Mobile Drawer Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-[60] md:hidden backdrop-blur-sm transition-opacity animate-in fade-in duration-300"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <div
+            className="absolute left-0 top-0 bottom-0 w-[280px] bg-white shadow-2xl p-6 flex flex-col animate-in slide-in-from-left duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-8">
+              <img src="/logo.png" alt="Christful Logo" className="w-[100px] h-auto" />
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                aria-label="Close menu"
+              >
+                <X size={24} className="text-slate-600" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-6 p-2 rounded-xl bg-slate-50 border border-slate-100">
+                  <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                    {isLoggedIn && user?.avatarUrl ? (
+                      <AvatarImage src={user.avatarUrl} alt={user.firstName} />
+                    ) : null}
+                    <AvatarFallback className="bg-[#800517] text-white">
+                      {user?.firstName?.charAt(0) || <User size={20} />}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-900 truncate">{user?.firstName || "Guest"}</p>
+                    <p className="text-xs text-slate-500 truncate">Kingdom Citizen</p>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <SideNav />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

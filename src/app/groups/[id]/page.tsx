@@ -201,15 +201,19 @@ export default function GroupDetailPage() {
           <div className="flex flex-col justify-end min-h-full pb-2">
             {messages.map((message) => {
               const isMe = message.sender.id === currentUserId;
+              const isAdmin = message.sender.id === (group as any)?.creatorId ||
+                (`${message.sender.firstName} ${message.sender.lastName}` === `${group.creator.firstName} ${group.creator.lastName}`);
+
               return (
                 <MessageBubble
                   key={message.id}
                   content={message.content}
                   senderName={`${message.sender.firstName} ${message.sender.lastName}`}
                   isMe={isMe}
-                  timestamp={new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  timestamp={new Date(message.createdAt).toISOString()}
                   avatarUrl={message.sender.avatarUrl}
-                  status="read" // Hardcoded for demo
+                  status="read"
+                  role={isAdmin ? "Admin" : undefined}
                 />
               );
             })}

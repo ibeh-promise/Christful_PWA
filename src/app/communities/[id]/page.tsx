@@ -193,12 +193,19 @@ export default function CommunityDetailPage() {
                   {community?.isPrivate ? "Request to Join" : "Join Group"}
                 </Button>
               ) : (
-                <Button variant="secondary" className="px-8 h-10 rounded-lg">
-                  Joined
+                <Button variant="secondary" className="px-8 h-10 rounded-lg" onClick={() => toast.info(isCreator ? "Community Settings coming soon!" : "You are a member")}>
+                  {isCreator ? "Manage" : "Joined"}
                 </Button>
               )}
-              <Button variant="secondary" size="icon" className="h-10 w-10"><Plus size={20} /></Button>
-              <Button variant="secondary" size="icon" className="h-10 w-10"><Search size={20} /></Button>
+              {isCreator && (
+                <Link href={`/communities/${communityId}/settings`}>
+                  <Button variant="secondary" size="icon" className="h-10 w-10 text-slate-600">
+                    <Settings name="Settings" size={20} />
+                  </Button>
+                </Link>
+              )}
+              <Button variant="secondary" size="icon" className="h-10 w-10 text-slate-600"><Plus size={20} /></Button>
+              <Button variant="secondary" size="icon" className="h-10 w-10 text-slate-600"><Search size={20} /></Button>
             </div>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1">{community?.name}</h1>
@@ -253,7 +260,7 @@ export default function CommunityDetailPage() {
         <p className="text-sm text-slate-600 mb-6">{community?.description}</p>
 
         <div className="space-y-4">
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-3 border-b pb-4">
             <Globe className="text-slate-400 mt-1" size={18} />
             <div>
               <p className="text-sm font-bold">{community?.isPrivate ? "Private" : "Public"}</p>
@@ -263,6 +270,20 @@ export default function CommunityDetailPage() {
                   : "Anyone can see who's in the group and what they post."
                 }
               </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 py-2">
+            <Avatar className="h-10 w-10 ring-2 ring-slate-100">
+              <AvatarImage src={community?.creator.avatarUrl} className="object-cover" />
+              <AvatarFallback>{community?.creator.firstName[0]}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-bold text-slate-900">{community?.creator.firstName} {community?.creator.lastName}</p>
+                <span className="bg-[#800517]/10 text-[#800517] text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Admin</span>
+              </div>
+              <p className="text-[10px] text-slate-500 font-medium italic">Creator</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
@@ -316,6 +337,44 @@ export default function CommunityDetailPage() {
         right={<About />}
       />
       <BottomNav />
+
+      {/* Create Group Modal */}
+      {isCreateGroupModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-slate-900">New Group</h2>
+              <Button variant="ghost" size="icon" onClick={() => setIsCreateGroupModalOpen(false)} className="rounded-full">
+                <Plus size={20} className="rotate-45" />
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Group Name</label>
+                <Input
+                  placeholder="e.g. Gospel Study"
+                  className="rounded-xl bg-slate-50 border-slate-200 h-12 focus-visible:ring-[#800517]"
+                  value={newGroupName}
+                  onChange={(e) => setNewGroupName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Description</label>
+                <textarea
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#800517] min-h-[100px] transition-all"
+                  placeholder="What is this group about?"
+                  value={newGroupDescription}
+                  onChange={(e) => setNewGroupDescription(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-3 justify-end mt-8">
+                <Button variant="ghost" className="rounded-full px-6" onClick={() => setIsCreateGroupModalOpen(false)}>Cancel</Button>
+                <Button className="bg-[#800517] hover:bg-[#a0061d] rounded-full px-8 font-bold shadow-lg shadow-red-100" onClick={handleCreateGroup}>Create Group</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
