@@ -57,55 +57,13 @@ export default function MessagesPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Fetch Standalone Groups
-  const { data: groupsData, isLoading: groupsLoading, mutate: mutateGroups } = useApi<{ groups: GroupChat[] }>(
-    ENDPOINTS.GROUPS,
+  // Fetch All Groups with Recent Messages (sorted by activity)
+  const { data: recentMessagesData, isLoading: chatsLoading, mutate: mutateGroups } = useApi<{ groups: GroupChat[] }>(
+    ENDPOINTS.GROUPS_WITH_RECENT_MESSAGES,
     { refreshInterval: 30000 }
   );
 
-  // Fetch Communities to get their groups
-  const { data: communitiesData, isLoading: communitiesLoading } = useApi<{ communities: any[] }>(
-    ENDPOINTS.COMMUNITIES,
-    { refreshInterval: 60000 }
-  );
-
-  const chatsLoading = groupsLoading || communitiesLoading;
-
-  const [allChats, setAllChats] = useState<GroupChat[]>([]);
-
-  useEffect(() => {
-    const standaloneGroups = groupsData?.groups || [];
-    const communityGroups: GroupChat[] = [];
-
-    if (communitiesData?.communities) {
-      communitiesData.communities.forEach((community: any) => {
-        if (community.groups && Array.isArray(community.groups)) {
-          community.groups.forEach((group: any) => {
-            communityGroups.push({
-              ...group,
-              communityId: community.id,
-              communityName: community.name
-            });
-          });
-        }
-      });
-    }
-
-    // Combine and remove duplicates by ID
-    const combined = [...standaloneGroups, ...communityGroups];
-    const unique = combined.reduce((acc: GroupChat[], current) => {
-      const x = acc.find(item => item.id === current.id);
-      if (!x) {
-        return acc.concat([current]);
-      } else {
-        return acc;
-      }
-    }, []);
-
-    setAllChats(unique);
-  }, [groupsData, communitiesData]);
-
-  const groupChats = allChats;
+  const groupChats = recentMessagesData?.groups || [];
 
   // Fetch Messages with SWR
   const { data: messagesData, mutate: mutateMessages } = useApi<{ messages: any[] }>(
